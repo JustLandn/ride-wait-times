@@ -13,11 +13,20 @@ PARKS = {
 
 now = datetime.now(ZoneInfo("America/Los_Angeles"))  # Pacific Time
 
+if "ntfy_topic" not in st.session_state:
+    st.session_state["ntfy_topic"] = st.query_params.get("ntfy", "")
+
 ntfy_topic = st.text_input(
     "Your ntfy topic (leave blank to skip push alerts)",
     key="ntfy_topic",
     placeholder="e.g. my-own-ride-alerts-1234",
+    help="Bookmark this page after entering it and it'll be remembered via the URL.",
 )
+
+if ntfy_topic:
+    st.query_params["ntfy"] = ntfy_topic
+elif "ntfy" in st.query_params:
+    del st.query_params["ntfy"]
 
 selected_park = st.selectbox("Park", list(PARKS.keys()), key="selected_park")
 park_id = PARKS[selected_park]
