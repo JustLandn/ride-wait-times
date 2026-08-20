@@ -29,3 +29,15 @@ Deactivate when done:
 ```bash
 deactivate
 ```
+
+## Secrets
+
+The ntfy topic URL is read from Streamlit secrets, not hardcoded. Copy the
+example file and fill in your own topic:
+
+```bash
+cp .streamlit/secrets.toml.example .streamlit/secrets.toml
+```
+
+On Streamlit Community Cloud, set `NTFY_TOPIC_URL` under the app's
+**Settings → Secrets** instead of committing a secrets.toml file.
