@@ -7,6 +7,8 @@ import streamlit as st
 
 now = datetime.now(ZoneInfo("America/Los_Angeles"))  # Pacific Time
 
+NTFY_TOPIC_URL = "https://ntfy.sh/landongeorge-mm-alerts-8kj2"
+
 url = "https://queue-times.com/parks/32/queue_times.json"
 response = requests.get(url)
 data = response.json()
@@ -26,6 +28,11 @@ for land in data["lands"]:
         was_low_last = st.session_state["was_under_threshold"].get(ride["name"], True)
         if is_low_now and not was_low_last:
             st.toast(f"{ride['name']} just dropped under 20 min!")
+            requests.post(
+                NTFY_TOPIC_URL,
+                data=f"{ride['name']} just dropped under 20 min ({wait_time} min)".encode("utf-8"),
+                headers={"Title": "Ride wait alert", "Priority": "default", "Tags": "roller_coaster"},
+            )
         st.session_state["was_under_threshold"][ride["name"]] = is_low_now
 
         if is_low_now:
