@@ -7,7 +7,7 @@ import streamlit as st
 
 now = datetime.now(ZoneInfo("America/Los_Angeles"))  # Pacific Time
 
-NTFY_TOPIC_URL = "https://ntfy.sh/landongeorge-mm-alerts-8kj2"
+NTFY_TOPIC_URL = st.secrets["NTFY_TOPIC_URL"]
 
 url = "https://queue-times.com/parks/32/queue_times.json"
 response = requests.get(url)
