@@ -6,29 +6,17 @@ import requests
 import streamlit as st
 
 PARKS = {
-    "Universal Studios Hollywood": "universal studios hollywood",
-    "Six Flags Magic Mountain": "six flags magic mountain",
-    "Knott's Berry Farm": "knott",
+    "Universal Studios Hollywood": 66,
+    "Six Flags Magic Mountain": 32,
+    "Knott's Berry Farm": 61,
 }
-
-
-@st.cache_data(ttl=86400)
-def get_park_id(name_fragment: str) -> int:
-    resp = requests.get("https://queue-times.com/parks.json")
-    resp.raise_for_status()
-    for company in resp.json():
-        for park in company.get("parks", []):
-            if name_fragment in park["name"].lower():
-                return park["id"]
-    raise ValueError(f"No queue-times.com park matched {name_fragment!r}")
-
 
 now = datetime.now(ZoneInfo("America/Los_Angeles"))  # Pacific Time
 
 NTFY_TOPIC_URL = st.secrets["NTFY_TOPIC_URL"]
 
 selected_park = st.selectbox("Park", list(PARKS.keys()), key="selected_park")
-park_id = get_park_id(PARKS[selected_park])
+park_id = PARKS[selected_park]
 
 if st.session_state.get("last_park") != selected_park:
     st.session_state["was_under_threshold"] = {}
