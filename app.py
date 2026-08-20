@@ -13,7 +13,11 @@ PARKS = {
 
 now = datetime.now(ZoneInfo("America/Los_Angeles"))  # Pacific Time
 
-NTFY_TOPIC_URL = st.secrets["NTFY_TOPIC_URL"]
+ntfy_topic = st.text_input(
+    "Your ntfy topic (leave blank to skip push alerts)",
+    key="ntfy_topic",
+    placeholder="e.g. my-own-ride-alerts-1234",
+)
 
 selected_park = st.selectbox("Park", list(PARKS.keys()), key="selected_park")
 park_id = PARKS[selected_park]
@@ -38,11 +42,12 @@ for land in data["lands"]:
         was_low_last = st.session_state["was_under_threshold"].get(ride["name"], True)
         if is_low_now and not was_low_last:
             st.toast(f"{ride['name']} just dropped under 20 min!")
-            requests.post(
-                NTFY_TOPIC_URL,
-                data=f"{ride['name']} just dropped under 20 min ({wait_time} min)".encode("utf-8"),
-                headers={"Title": "Ride wait alert", "Priority": "default", "Tags": "roller_coaster"},
-            )
+            if ntfy_topic:
+                requests.post(
+                    f"https://ntfy.sh/{ntfy_topic}",
+                    data=f"{ride['name']} just dropped under 20 min ({wait_time} min)".encode("utf-8"),
+                    headers={"Title": "Ride wait alert", "Priority": "default", "Tags": "roller_coaster"},
+                )
         st.session_state["was_under_threshold"][ride["name"]] = is_low_now
 
         if is_low_now:

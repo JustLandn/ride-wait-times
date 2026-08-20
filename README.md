@@ -30,14 +30,8 @@ Deactivate when done:
 deactivate
 ```
 
-## Secrets
+## Notifications
 
-The ntfy topic URL is read from Streamlit secrets, not hardcoded. Copy the
-example file and fill in your own topic:
-
-```bash
-cp .streamlit/secrets.toml.example .streamlit/secrets.toml
-```
-
-On Streamlit Community Cloud, set `NTFY_TOPIC_URL` under the app's
-**Settings → Secrets** instead of committing a secrets.toml file.
+Each visitor enters their own ntfy topic in the app's text field, kept only
+in their browser session — no shared config needed. Leave it blank to skip
+push alerts and just see the in-app toast.
