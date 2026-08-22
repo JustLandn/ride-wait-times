@@ -31,14 +31,24 @@ elif "ntfy" in st.query_params:
 selected_park = st.selectbox("Park", list(PARKS.keys()), key="selected_park")
 park_id = PARKS[selected_park]
 
-if st.session_state.get("last_park") != selected_park:
-    st.session_state["was_under_threshold"] = {}
-    st.session_state["last_park"] = selected_park
-
 url = f"https://queue-times.com/parks/{park_id}/queue_times.json"
 response = requests.get(url)
 data = response.json()
 st.caption(f"Last updated: {now.strftime('%I:%M %p')}")
+
+ride_names = [ride["name"] for land in data["lands"] for ride in land["rides"]]
+
+if st.session_state.get("last_park") != selected_park:
+    st.session_state["was_under_threshold"] = {}
+    st.session_state["last_park"] = selected_park
+    st.session_state.pop("rides_i_care_about", None)
+
+rides_i_care_about = st.multiselect(
+    "Which rides do you want alerts for?",
+    ride_names,
+    default=ride_names,
+    key="rides_i_care_about",
+)
 
 for land in data["lands"]:
     for ride in land["rides"]:
@@ -49,7 +59,7 @@ for land in data["lands"]:
         wait_time = ride["wait_time"]
         is_low_now = wait_time < 20
         was_low_last = st.session_state["was_under_threshold"].get(ride["name"], True)
-        if is_low_now and not was_low_last:
+        if is_low_now and not was_low_last and ride["name"] in rides_i_care_about:
             st.toast(f"{ride['name']} just dropped under 20 min!")
             if ntfy_topic:
                 requests.post(
