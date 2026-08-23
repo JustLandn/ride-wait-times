@@ -13,6 +13,8 @@ PARKS = {
 
 now = datetime.now(ZoneInfo("America/Los_Angeles"))  # Pacific Time
 
+st.caption("Powered by [Queue-Times.com](https://queue-times.com/en-US)")
+
 if "ntfy_topic" not in st.session_state:
     st.session_state["ntfy_topic"] = st.query_params.get("ntfy", "")
 
