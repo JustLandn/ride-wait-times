@@ -1,5 +1,10 @@
 # ride-wait-times
 
+Live app: https://ride-wait-times.streamlit.app/
+
+Hosted on [Streamlit Community Cloud](https://streamlit.io/cloud), which redeploys
+automatically on every push to `main`.
+
 ## Virtual environment
 
 Create a virtual environment:
