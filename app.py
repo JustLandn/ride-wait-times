@@ -38,11 +38,23 @@ response = requests.get(url)
 data = response.json()
 st.caption(f"Last updated: {now.strftime('%I:%M %p')}")
 
-ride_names = [ride["name"] for land in data["lands"] for ride in land["rides"]]
+show_kids_rides = st.checkbox("Show kids' rides", key="show_kids_rides")
 
-if st.session_state.get("last_park") != selected_park:
+lands = [
+    land
+    for land in data["lands"]
+    if show_kids_rides or "kid" not in land["name"].lower()
+]
+
+ride_names = [ride["name"] for land in lands for ride in land["rides"]]
+
+if (
+    st.session_state.get("last_park") != selected_park
+    or st.session_state.get("last_show_kids_rides") != show_kids_rides
+):
     st.session_state["was_under_threshold"] = {}
     st.session_state["last_park"] = selected_park
+    st.session_state["last_show_kids_rides"] = show_kids_rides
     st.session_state.pop("rides_i_care_about", None)
 
 rides_i_care_about = st.multiselect(
@@ -52,7 +64,7 @@ rides_i_care_about = st.multiselect(
     key="rides_i_care_about",
 )
 
-for land in data["lands"]:
+for land in lands:
     for ride in land["rides"]:
         if not ride["is_open"]:
             st.error(f"{ride['name']}: closed")
